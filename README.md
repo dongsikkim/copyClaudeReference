@@ -37,6 +37,11 @@ cd copyClaudeReference
 
 > **참고:** JDK 17이 필요합니다.
 
+## 스크린샷
+
+### 에디터 컨텍스트 메뉴
+<img src="screenshots/context-menu.png" alt="에디터 우클릭 메뉴에서 Copy Claude Reference" width="400"/>
+
 ## 사용 방법
 
 1. 프로젝트의 아무 파일을 엽니다
