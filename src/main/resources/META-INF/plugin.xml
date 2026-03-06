@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.navercorp.dongsik.copy-claude-reference</id>
     <name>Copy Claude Reference</name>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <vendor email="dongsik.kim@navercorp.com" url="https://oss.navercorp.com/dongsik-kim/copyClaudeReference">김동식(kr20361)</vendor>
     <description><![CDATA[
 <h2>Copy Claude Reference</h2>
