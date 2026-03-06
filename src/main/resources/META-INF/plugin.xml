@@ -2,7 +2,7 @@
     <id>com.example.copy-claude-reference</id>
     <name>Copy Claude Reference</name>
     <version>1.0.0</version>
-    <vendor email="dongsik.kim@navercorp.com">김동식(kr20361)</vendor>
+    <vendor email="dongsik.kim@navercorp.com" url="https://oss.navercorp.com/dongsik-kim/copyClaudeReference">김동식(kr20361)</vendor>
     <description><![CDATA[
 <h2>Copy Claude Reference</h2>
 <p>에디터에서 <b>Claude Code 형식</b>(<code>@file#Lstart-end</code>)의 파일 참조를 클립보드에 복사합니다. Claude Code 대화에 바로 붙여넣어 정확한 코드 컨텍스트를 전달하세요.</p>
