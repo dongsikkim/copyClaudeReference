@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>최해니 이동능력 해금</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { background:#04070f; }
+  body { width:1080px; height:1920px; overflow:hidden; }
+
+  :root{
+    --gold-1:#fffdf3;
+    --gold-2:#ffe7a3;
+    --gold-3:#ffc44d;
+    --gold-4:#e08a17;
+    --ink:#05080f;
+    --line:rgba(255,198,88,.42);
+    --cyan:#7fe6ff;
+    --danger:#ff6b6b;
+  }
+
+  .stage{
+    position:relative; width:1080px; height:1920px; overflow:hidden;
+    background:#04070f; isolation:isolate;
+    font-family:'Noto Sans KR', sans-serif;
+  }
+
+  /* ---------- photo ---------- */
+  .photo{
+    position:absolute; inset:0;
+    background:url('assets/haeni-crawl.jpg') center/cover no-repeat;
+    filter:saturate(1.14) contrast(1.09) brightness(1.03);
+  }
+  /* cool colour grade so the gold UI pops */
+  .grade{
+    position:absolute; inset:0; mix-blend-mode:soft-light;
+    background:linear-gradient(180deg, rgba(40,90,190,.75), rgba(255,190,120,.20) 42%, rgba(50,25,90,.75));
+  }
+  /* spotlight so she reads bright against the dark UI */
+  .spot{
+    position:absolute; inset:0; mix-blend-mode:screen; pointer-events:none;
+    background:radial-gradient(ellipse 420px 320px at 45% 38%, rgba(255,244,222,.15), transparent 74%);
+  }
+
+  /* ---------- unlock light burst behind the baby ---------- */
+  .burst{
+    position:absolute; inset:0; mix-blend-mode:screen; pointer-events:none;
+    background:
+      radial-gradient(circle 380px at 45% 35%, rgba(255,226,150,.26), rgba(255,190,70,.10) 46%, transparent 74%),
+      radial-gradient(circle 780px at 45% 36%, rgba(255,176,60,.26), transparent 70%),
+      radial-gradient(circle 1200px at 45% 37%, rgba(90,150,255,.16), transparent 72%);
+  }
+  .rays{
+    position:absolute; left:45%; top:35%; width:2400px; height:2400px;
+    transform:translate(-50%,-50%) rotate(-8deg);
+    mix-blend-mode:screen; opacity:.26; pointer-events:none;
+    background:repeating-conic-gradient(from 0deg,
+      rgba(255,225,150,.85) 0deg 1.6deg, transparent 1.6deg 9deg);
+    -webkit-mask-image:radial-gradient(circle, rgba(0,0,0,.05) 90px, rgba(0,0,0,.95) 300px, transparent 690px);
+            mask-image:radial-gradient(circle, rgba(0,0,0,.05) 90px, rgba(0,0,0,.95) 300px, transparent 690px);
+  }
+  .ring{
+    position:absolute; left:45%; top:35%; transform:translate(-50%,-50%);
+    width:760px; height:760px; border-radius:50%; pointer-events:none;
+    border:3px solid rgba(255,214,120,.42);
+    box-shadow:0 0 60px rgba(255,196,77,.35), inset 0 0 90px rgba(255,196,77,.18);
+    mix-blend-mode:screen;
+  }
+  .ring.small{ width:520px; height:520px; border-color:rgba(255,236,180,.30); border-style:dashed; }
+
+  /* ---------- scrims ---------- */
+  .scrim-top{
+    position:absolute; left:0; right:0; top:0; height:820px; pointer-events:none;
+    background:linear-gradient(180deg,
+      rgba(4,7,15,.96) 0%, rgba(4,7,15,.90) 26%, rgba(4,7,15,.55) 52%, rgba(4,7,15,0) 100%);
+  }
+  .scrim-bottom{
+    position:absolute; left:0; right:0; bottom:0; height:1000px; pointer-events:none;
+    background:linear-gradient(0deg,
+      #04070f 0%, rgba(4,7,15,.985) 30%, rgba(4,7,15,.88) 50%, rgba(4,7,15,.35) 78%, rgba(4,7,15,0) 100%);
+  }
+  .vignette{
+    position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(ellipse 78% 62% at 50% 46%, transparent 40%, rgba(0,0,0,.55) 100%);
+  }
+  .sparks{ position:absolute; inset:0; pointer-events:none; }
+  .sparks i{
+    position:absolute; display:block; border-radius:50%;
+    background:#ffe9b0; box-shadow:0 0 10px 3px rgba(255,206,110,.75);
+  }
+
+  /* ---------- top HUD ---------- */
+  .hud{
+    position:absolute; top:38px; left:44px; right:44px;
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:23px; font-weight:700; letter-spacing:.20em;
+    color:rgba(255,229,168,.72);
+  }
+  .hud .box{
+    border:2px solid rgba(255,198,88,.30); padding:8px 18px;
+    background:rgba(8,12,24,.55); backdrop-filter:blur(2px);
+  }
+
+  /* ---------- headline ---------- */
+  .head{ position:absolute; top:126px; left:0; right:0; text-align:center; }
+
+  .kicker{
+    display:flex; align-items:center; justify-content:center; gap:22px;
+    font-size:29px; font-weight:900; letter-spacing:.44em; text-indent:.44em;
+    color:#ffd980; text-shadow:0 0 22px rgba(255,182,60,.85);
+  }
+  .kicker::before, .kicker::after{
+    content:""; width:132px; height:2px;
+    background:linear-gradient(90deg, transparent, rgba(255,205,110,.95));
+  }
+  .kicker::after{ transform:scaleX(-1); }
+
+  .who{
+    margin-top:26px;
+    font-family:'Black Han Sans', sans-serif;
+    font-size:62px; letter-spacing:.24em; text-indent:.24em;
+    color:#ffeec2;
+    text-shadow:0 0 26px rgba(255,190,70,.8), 0 4px 0 rgba(0,0,0,.65);
+  }
+
+  .title{ margin-top:10px; }
+  .title span{
+    position:relative; display:inline-block;
+    font-family:'Black Han Sans', sans-serif;
+    font-size:132px; line-height:1.12; letter-spacing:.01em;
+    background:linear-gradient(180deg,#fffdf3 0%,#ffeab0 34%,#ffc44d 62%,#dd8410 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .title span::before{
+    content:attr(data-t); position:absolute; inset:0; z-index:-1;
+    color:#050810; -webkit-text-stroke:16px #050810;
+    filter:drop-shadow(0 0 30px rgba(255,178,50,.95)) drop-shadow(0 0 70px rgba(255,150,30,.55));
+  }
+  .under{
+    margin:20px auto 0; width:640px; height:3px;
+    background:linear-gradient(90deg, transparent, rgba(255,205,110,.95), transparent);
+    box-shadow:0 0 18px rgba(255,180,60,.7);
+  }
+  .sub{
+    margin-top:16px; font-size:26px; font-weight:700; letter-spacing:.30em; text-indent:.30em;
+    color:rgba(190,224,255,.78);
+  }
+
+  /* ---------- bottom skill card ---------- */
+  .panel{ position:absolute; left:46px; right:46px; bottom:44px; }
+
+  .panel-label{
+    display:flex; align-items:center; gap:18px; margin-bottom:18px;
+    font-size:24px; font-weight:900; letter-spacing:.30em; color:#ffd980;
+  }
+  .panel-label::after{
+    content:""; flex:1; height:2px;
+    background:linear-gradient(90deg, rgba(255,205,110,.85), transparent);
+  }
+
+  .card{
+    position:relative; padding:30px 32px 26px;
+    background:linear-gradient(160deg, rgba(14,20,38,.94), rgba(8,11,22,.96));
+    border:2px solid var(--line);
+    box-shadow:0 0 0 1px rgba(0,0,0,.6), 0 24px 70px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .card::before, .card::after{
+    content:""; position:absolute; width:30px; height:30px; border:3px solid #ffc851;
+  }
+  .card::before{ top:-3px; left:-3px; border-right:0; border-bottom:0; }
+  .card::after{ bottom:-3px; right:-3px; border-left:0; border-top:0; }
+
+  .row{ display:flex; gap:26px; align-items:center; }
+
+  .icon{
+    position:relative; flex:0 0 auto; width:158px; height:158px;
+    border:3px solid #ffc851; background:#0b1122;
+    box-shadow:0 0 34px rgba(255,180,60,.45), inset 0 0 30px rgba(0,0,0,.6);
+  }
+  .icon .face{
+    position:absolute; inset:5px;
+    background-image:url('assets/haeni-crawl.jpg');
+    background-repeat:no-repeat;
+    background-size:507px 901px;
+    background-position:-156px -236px;
+    filter:saturate(1.15) contrast(1.05);
+  }
+  .icon .lv{
+    position:absolute; right:-10px; bottom:-14px;
+    background:#ffc851; color:#20160a;
+    font-size:20px; font-weight:900; letter-spacing:.06em;
+    padding:4px 12px; box-shadow:0 4px 14px rgba(0,0,0,.6);
+  }
+
+  .meta{ flex:1; min-width:0; }
+  .rarity{
+    display:inline-flex; align-items:center; gap:10px;
+    font-size:21px; font-weight:900; letter-spacing:.22em;
+    color:#1d1405; background:linear-gradient(90deg,#ffdf8e,#ffb01f);
+    padding:5px 14px; box-shadow:0 0 22px rgba(255,176,31,.55);
+  }
+  .stars{ margin-left:14px; font-size:24px; color:#ffd980; letter-spacing:.10em;
+          text-shadow:0 0 14px rgba(255,190,70,.9); vertical-align:middle; }
+  .sname{
+    margin-top:12px; font-family:'Black Han Sans', sans-serif;
+    font-size:60px; color:#fff6e0; letter-spacing:.02em;
+    text-shadow:0 0 24px rgba(255,176,60,.45), 0 3px 0 rgba(0,0,0,.55);
+  }
+  .tags{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; }
+  .tag{
+    font-size:20px; font-weight:700; letter-spacing:.10em;
+    color:#a9d8ff; border:2px solid rgba(127,230,255,.35);
+    background:rgba(24,52,88,.45); padding:4px 12px;
+  }
+  .tag.warn{ color:#ffb3b3; border-color:rgba(255,107,107,.40); background:rgba(70,20,26,.45); }
+
+  .desc{
+    margin-top:22px; padding:16px 20px;
+    font-size:26px; line-height:1.55; color:#d7e3f5; font-weight:500;
+    border-left:4px solid rgba(255,200,81,.75);
+    background:rgba(255,255,255,.035);
+  }
+
+  .stats{ margin-top:22px; display:grid; gap:13px; }
+  .stat{ display:grid; grid-template-columns:190px 1fr 168px; align-items:center; gap:18px; }
+  .stat .k{ font-size:23px; font-weight:700; color:#9fb2cc; letter-spacing:.03em; }
+  .stat .bar{ position:relative; height:14px; background:rgba(255,255,255,.08); overflow:hidden; }
+  .stat .bar i{
+    position:absolute; left:0; top:0; bottom:0; display:block;
+    background:linear-gradient(90deg,#ffd980,#ff9c1a);
+    box-shadow:0 0 16px rgba(255,168,40,.75);
+  }
+  .stat.red .bar i{ background:linear-gradient(90deg,#ff9d9d,#e33b3b); box-shadow:0 0 16px rgba(227,59,59,.7); }
+  .stat.cyan .bar i{ background:linear-gradient(90deg,#bff1ff,#25b7e8); box-shadow:0 0 16px rgba(37,183,232,.7); }
+  .stat .v{ text-align:right; font-size:24px; font-weight:900; color:#ffe6ae; letter-spacing:.02em; }
+  .stat.red .v{ color:#ff9d9d; }
+  .stat.cyan .v{ color:#bff1ff; }
+  .stat .v small{ font-size:19px; font-weight:700; color:#7f90a8; margin-right:8px; }
+
+  .alert{
+    margin-top:24px; display:flex; align-items:center; gap:16px;
+    padding:15px 20px; border:2px solid rgba(255,107,107,.45);
+    background:linear-gradient(90deg, rgba(84,18,24,.72), rgba(40,12,18,.42));
+  }
+  .alert .bang{
+    flex:0 0 auto; width:38px; height:38px; display:grid; place-items:center;
+    background:#ff5b5b; color:#2b0708; font-size:26px; font-weight:900;
+    clip-path:polygon(50% 0%, 100% 100%, 0% 100%);
+    padding-top:9px; line-height:1;
+  }
+  .alert .t{ font-size:25px; font-weight:900; color:#ffd2d2; letter-spacing:.04em; }
+
+  .foot{
+    margin-top:20px; display:flex; justify-content:space-between; align-items:center;
+    font-size:21px; font-weight:700; letter-spacing:.06em; color:#6f7f96;
+  }
+  .foot b{ color:#ffd980; font-weight:900; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="photo"></div>
+  <div class="grade"></div>
+  <div class="spot"></div>
+  <div class="rays"></div>
+  <div class="burst"></div>
+  <div class="ring"></div>
+  <div class="ring small"></div>
+
+  <div class="scrim-top"></div>
+  <div class="scrim-bottom"></div>
+  <div class="vignette"></div>
+  <div class="sparks" id="sparks"></div>
+
+  <div class="hud">
+    <div class="box">PLAYER · 최해니</div>
+    <div class="box">AGE 06M · EXP 100%</div>
+  </div>
+
+  <div class="head">
+    <div class="kicker">NEW ABILITY UNLOCKED</div>
+    <div class="who">최 해 니</div>
+    <div class="title"><span data-t="이동 능력 해금">이동 능력 해금</span></div>
+    <div class="under"></div>
+    <div class="sub">MOBILITY UNLOCKED</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-label">◆ SKILL ACQUIRED</div>
+    <div class="card">
+      <div class="row">
+        <div class="icon">
+          <div class="face"></div>
+          <div class="lv">Lv.1</div>
+        </div>
+        <div class="meta">
+          <div>
+            <span class="rarity">SSR · 전설</span>
+            <span class="stars">★★★★★</span>
+          </div>
+          <div class="sname">포복 전진</div>
+          <div class="tags">
+            <span class="tag">패시브 · 상시 발동</span>
+            <span class="tag">쿨타임 없음</span>
+            <span class="tag warn">해제 불가</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="desc">
+        배를 밀어 스스로 전진한다. 시야에 들어온 모든 물체가<br>
+        상호작용 가능 대상으로 전환된다.
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="k">이동 속도</div>
+          <div class="bar"><i style="width:64%"></i></div>
+          <div class="v"><small>0 ▸</small>12</div>
+        </div>
+        <div class="stat cyan">
+          <div class="k">도달 범위</div>
+          <div class="bar"><i style="width:78%"></i></div>
+          <div class="v"><small>0.3m ▸</small>3.0m</div>
+        </div>
+        <div class="stat">
+          <div class="k">위험물 접근률</div>
+          <div class="bar"><i style="width:88%"></i></div>
+          <div class="v"><small>▸</small>+240%</div>
+        </div>
+        <div class="stat red">
+          <div class="k">보호자 체력</div>
+          <div class="bar"><i style="width:96%"></i></div>
+          <div class="v"><small>100 ▸</small>-999</div>
+        </div>
+      </div>
+
+      <div class="alert">
+        <div class="bang">!</div>
+        <div class="t">보호자 여러분, 지금 즉시 방어 태세를 정비하십시오</div>
+      </div>
+
+      <div class="foot">
+        <div>최초 습득 · 2026. 09. 05  19:49</div>
+        <div>NEXT ▸ <b>붙잡고 서기 (Lv.2)</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // deterministic sparks so every render is identical
+  let s = 20260905;
+  const rnd = () => (s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296;
+  const box = document.getElementById('sparks');
+  for (let i = 0; i < 90; i++) {
+    const a = rnd() * Math.PI * 2;
+    const r = 110 + Math.pow(rnd(), 0.6) * 620;
+    const x = 1080 * 0.45 + Math.cos(a) * r;
+    const y = 1920 * 0.35 + Math.sin(a) * r * 0.92;
+    if (y < 470 || y > 1230 || x < -20 || x > 1100) continue;
+    const d = 3 + rnd() * 7;
+    const el = document.createElement('i');
+    el.style.cssText =
+      `left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;width:${d.toFixed(1)}px;height:${d.toFixed(1)}px;opacity:${(0.28 + rnd() * 0.62).toFixed(2)}`;
+    box.appendChild(el);
+  }
+</script>
+</body>
+</html>
